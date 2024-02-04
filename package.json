@@ -1,0 +1,25 @@
+{
+  "name": "telegram-idch-controler",
+  "version": "1.0.0",
+  "description": "Monitor your server from telegram bot",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sonofescobar1337/telegram-idch-controler.git"
+  },
+  "author": "sonofescobar1337",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sonofescobar1337/telegram-idch-controler/issues"
+  },
+  "homepage": "https://github.com/sonofescobar1337/telegram-idch-controler#readme",
+  "dependencies": {
+    "node-fetch": "^2.6.0",
+    "dotenv": "^16.3.1",
+    "node-telegram-bot-api": "^0.61.0"
+  }
+}
