@@ -37,11 +37,11 @@ async function getvmingfo(apikey, vmid, slug) {
 }
 
 
-async function startvm(apikey, vmid) {
+async function startvm(apikey, vmid, slug) {
 
 
   try {
-    const url = await fetch('https://api.idcloudhost.com/v1/user-resource/vm/start', {
+    const url = await fetch(`https://api.idcloudhost.com/v1/${slug}/user-resource/vm/start`, {
       method: 'POST',
       headers: {
         'apikey': `${apikey}`
@@ -60,16 +60,17 @@ async function startvm(apikey, vmid) {
 }
 
 
-async function stopvm(apikey, vmid) {
+async function stopvm(apikey, vmid, slug, force) {
 
   try {
-    const url = await fetch('https://api.idcloudhost.com/v1/user-resource/vm/stop', {
+    const url = await fetch(`https://api.idcloudhost.com/v1/${slug}/user-resource/vm/stop`, {
       method: 'POST',
       headers: {
         'apikey': `${apikey}`
       },
       body: new URLSearchParams({
-        'uuid': `${vmid}`
+        'uuid': `${vmid}`,
+        'force': `${force}`
       })
     });
 
