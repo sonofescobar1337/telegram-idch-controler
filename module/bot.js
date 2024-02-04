@@ -127,7 +127,7 @@ bot.on('callback_query', async (query) => {
                 let replyMarkup = {
                     inline_keyboard: [
                         [{ text: '🟢 Start', callback_data: `action-start-${uid}|${slug}` },
-                        { text: '🟡 Check Status', callback_data: `action-reboot-${uid}|${slug}` }],
+                        { text: '🟡 Check Status', callback_data: `action-status-${uid}|${slug}` }],
                     ],
                     resize_keyboard: true,
                 };
@@ -146,7 +146,6 @@ bot.on('callback_query', async (query) => {
                         [{ text: '🔴 Shutdown', callback_data: `action-shutdown-${uid}|${slug}` },
                         { text: '🔴 Force Shutdown', callback_data: `action-force-${uid}|${slug}` }],
                         [
-                            { text: '♻️ Reboot', callback_data: `action-reboot-${uid}|${slug}` },
                             { text: '🟡 Check Status', callback_data: `action-status-${uid}|${slug}` }],
                     ],
                     resize_keyboard: true,
@@ -178,9 +177,150 @@ bot.on('callback_query', async (query) => {
 
 
 
-        } else if(data.startsWith('action-start')) {
+        } else if (data.startsWith('action-start-')) {
+            const mikir = data.replace('action-start-', '');
+            const misah = mikir.split('|');
+            const uid = misah[0];
+            const slug = misah[1];
 
-            
+            const startvm = await mod.startvm(apikey, uid, slug);
+            const newStatusMessage = startvm.respon.status === 'running' ? '🟢 RUNNING' : '🟡 UNKNOWN';
+            // console.log(startvm);
+            let replyMarkup = {
+                inline_keyboard: [
+                    [{ text: '🔴 Shutdown', callback_data: `action-shutdown-${uid}|${slug}` },
+                    { text: '🔴 Force Shutdown', callback_data: `action-force-${uid}|${slug}` }],
+                    [
+                        { text: '🟡 Check Status', callback_data: `action-status-${uid}|${slug}` }],
+                ],
+                resize_keyboard: true,
+            };
+
+            const options = {
+                reply_markup: JSON.stringify(replyMarkup),
+            };
+            const vmInfo = await mod.getvmingfo(apikey, uid, slug);
+            bot.editMessageText(`[++++++++ VM INFO ++++++++ ]\nNama VM : ${vmInfo.respon.hostname}\nStatus: ${newStatusMessage}\nPrivate IP : ${vmInfo.respon.private_ipv4}\nSize VM : ${vmInfo.respon.vcpu}/${vmInfo.respon.memory}\nCreated At : ${vmInfo.respon.created_at}\nUpdated At : ${vmInfo.respon.updated_at}`, {
+                chat_id: chatId,
+                message_id: query.message.message_id,
+                ...options
+            });
+
+        } else if (data.startsWith('action-force-')) {
+            const mikir = data.replace('action-force-', '');
+            const misah = mikir.split('|');
+            const uid = misah[0];
+            const slug = misah[1];
+            const force = true
+
+            const stopvm = await mod.stopvm(apikey, uid, slug, force);
+            //console.log(stopvm)
+            const newStatusMessage = stopvm.respon.status === 'stopped' ? '🔴 STOPPED' : '🟡 UNKNOWN';
+
+            let replyMarkup = {
+                inline_keyboard: [
+                    [{ text: '🟢 Start', callback_data: `action-start-${uid}|${slug}` },
+                    { text: '🟡 Check Status', callback_data: `action-status-${uid}|${slug}` }],
+                ],
+                resize_keyboard: true,
+            };
+
+            const options = {
+                reply_markup: JSON.stringify(replyMarkup),
+            };
+            const vmInfo = await mod.getvmingfo(apikey, uid, slug);
+            bot.editMessageText(`[++++++++ VM INFO ++++++++ ]\nNama VM : ${vmInfo.respon.hostname}\nStatus: ${newStatusMessage}\nPrivate IP : ${vmInfo.respon.private_ipv4}\nSize VM : ${vmInfo.respon.vcpu}/${vmInfo.respon.memory}\nCreated At : ${vmInfo.respon.created_at}\nUpdated At : ${vmInfo.respon.updated_at}`, {
+                chat_id: chatId,
+                message_id: query.message.message_id,
+                ...options
+            });
+
+        } else if (data.startsWith('action-shutdown-')) {
+            const mikir = data.replace('action-shutdown-', '');
+            const misah = mikir.split('|');
+            const uid = misah[0];
+            const slug = misah[1];
+            const force = false
+
+            const stopvm = await mod.stopvm(apikey, uid, slug, force);
+            //console.log(stopvm)
+            const newStatusMessage = stopvm.respon.status === 'stopped' ? '🔴 STOPPED' : '🟡 UNKNOWN';
+
+            let replyMarkup = {
+                inline_keyboard: [
+                    [{ text: '🟢 Start', callback_data: `action-start-${uid}|${slug}` },
+                    { text: '🟡 Check Status', callback_data: `action-status-${uid}|${slug}` }],
+                ],
+                resize_keyboard: true,
+            };
+
+            const options = {
+                reply_markup: JSON.stringify(replyMarkup),
+            };
+            const vmInfo = await mod.getvmingfo(apikey, uid, slug);
+            bot.editMessageText(`[++++++++ VM INFO ++++++++ ]\nNama VM : ${vmInfo.respon.hostname}\nStatus: ${newStatusMessage}\nPrivate IP : ${vmInfo.respon.private_ipv4}\nSize VM : ${vmInfo.respon.vcpu}/${vmInfo.respon.memory}\nCreated At : ${vmInfo.respon.created_at}\nUpdated At : ${vmInfo.respon.updated_at}`, {
+                chat_id: chatId,
+                message_id: query.message.message_id,
+                ...options
+            });
+
+        } else if (data.startsWith('action-status-')) {
+            const mikir = data.replace('action-status-', '');
+            const misah = mikir.split('|');
+            const uid = misah[0];
+            const slug = misah[1];
+
+            let vmInfo;
+            try {
+                vmInfo = await mod.getvmingfo(apikey, uid, slug);
+                //console.log(vmInfo);
+
+                let replyMarkup = {};
+                let newStatusMessage = '';
+
+                if (vmInfo.respon.status === 'stopped') {
+                    newStatusMessage = vmInfo.respon.status === 'stopped' ? '🔴 STOPPED' : '🟡 UNKNOWN';
+                    replyMarkup = {
+                        inline_keyboard: [
+                            [{ text: '🟢 Start', callback_data: `action-start-${uid}|${slug}` },
+                            { text: '🟡 Check Status', callback_data: `action-status-${uid}|${slug}` }],
+                        ],
+                        resize_keyboard: true,
+                    };
+                } else if (vmInfo.respon.status === 'running') {
+                    newStatusMessage = vmInfo.respon.status === 'running' ? '🟢 RUNNING' : '🟡 UNKNOWN';
+                    replyMarkup = {
+                        inline_keyboard: [
+                            [{ text: '🔴 Shutdown', callback_data: `action-shutdown-${uid}|${slug}` },
+                            { text: '🔴 Force Shutdown', callback_data: `action-force-${uid}|${slug}` }],
+                            [
+                                { text: '🟡 Check Status', callback_data: `action-status-${uid}|${slug}` }],
+                        ],
+                        resize_keyboard: true,
+                    };
+                } else {
+                    newStatusMessage = '🟡 UNKNOWN'
+                    replyMarkup = {
+                        inline_keyboard: [
+                            [{ text: '🟡 Check Status', callback_data: `action-status-${uid}|${slug}` }],
+                        ],
+                        resize_keyboard: true,
+                    };
+                }
+
+                const options = {
+                    reply_markup: JSON.stringify(replyMarkup),
+                };
+
+                bot.editMessageText(`[++++++++ VM INFO ++++++++ ]\nNama VM : ${vmInfo.respon.hostname}\nStatus: ${newStatusMessage}\nPrivate IP : ${vmInfo.respon.private_ipv4}\nSize VM : ${vmInfo.respon.vcpu}/${vmInfo.respon.memory}\nCreated At : ${vmInfo.respon.created_at}\nUpdated At : ${vmInfo.respon.updated_at}\n\nTimestamp: ${Date.now()}`, {
+                    chat_id: chatId,
+                    message_id: query.message.message_id,
+                    ...options
+                });
+            } catch (error) {
+                console.error(error);
+                // Handle error here
+            }
         }
     } catch (error) {
         console.error(error);
