@@ -53,4 +53,5 @@ create your telegram bot [HERE](https://t.me/BotFather)
 
 
 ## Screenshots
-![Screenshots 1](https://github.com/sonofescobar1337/server-scanner/blob/main/skringsut/scrennshots-1.jpg?raw=true)
+![Screenshots 1](https://github.com/sonofescobar1337/telegram-idch-controler/blob/main/skringsut/skringsut-1.jpg?raw=true) <br>
+![Screenshots 2](https://github.com/sonofescobar1337/telegram-idch-controler/blob/main/skringsut/skringsut-2.jpg?raw=true) <br>
